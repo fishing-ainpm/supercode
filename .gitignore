@@ -129,3 +129,47 @@ dmypy.json
 *.swo
 *~
 .DS_Store
+
+
+# Added patterns to catch common secrets, credentials and configs
+# Secrets & credentials
+.env
+.env.*
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+*.jks
+*.asc
+credentials.json
+service_account*.json
+.aws/credentials
+.aws/config
+.gcloud/
+.azure/
+.netrc
+secrets.yml
+config/secrets.yml
+**/secrets/*
+# Common personal/OS files
+*.log
+*.sqlite3
+*.db
+# Already present but reafirming
+venv/
+.envrc
+
+# Optional: ignore local config examples that might contain placeholders
+.env.local
+.env.development
+.env.production
+
+# Optional: lockfiles and local python caches
+Pipfile.lock
+poetry.lock
+
+# Optional: editor temp files
+*~
+*.swp
+*.swo
