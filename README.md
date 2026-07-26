@@ -7,7 +7,7 @@ SuperCode é um CLI que orquestra múltiplos agentes de IA especializados — pl
 ### Opção 1: One-line install (Recomendado)
 
 ```bash
-curl https://raw.githubusercontent.com/fishing-ainpm/supercode/master/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/fishing-ainpm/supercode/master/install.sh | bash
 ```
 
 Depois atualize seu shell:
