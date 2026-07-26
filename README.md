@@ -1,6 +1,6 @@
 # Supercode
 
-Descrição do seu projeto aqui.
+SuperCode é um CLI que orquestra múltiplos agentes de IA especializados — planejamento, implementação, revisão e testes — pra automatizar tarefas de programação de ponta a ponta. Em vez de depender de uma única ferramenta, ele une as capacidades do Claude Code e do Codex CLI num só fluxo: você descreve a tarefa, o SuperCode lê o projeto, propõe um plano, pede sua confirmação, implementa as mudanças, revisa o próprio código em busca de bugs e vulnerabilidades, roda os testes, e te entrega um resumo com o diff. Funciona com qualquer provedor de LLM (Anthropic, OpenAI, DeepSeek, e outros via configuração), com permissões e checkpoints de git em cada etapa
 
 ## Instalação Rápida
 
@@ -67,6 +67,9 @@ source venv/bin/activate
 pip install -e .
 pip install -r requirements-dev.txt  # se existir
 ```
+
+** R.I.P Donut-corp, foi bom enquanto durou **
+
 
 ## Licença
 
