@@ -11,11 +11,15 @@ import argparse
 import sys
 from pathlib import Path
 
+# garante que o pacote do projeto esteja no path para imports relativos funcionarem
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from core.config import example_config_toml, resolve_provider_config
 from core.orchestrator import Providers, SuperCodeOrchestrator
 from providers import build_provider
+
+# import do aquário (módulo que exibe o splash/trigger)
+from cli import aquarium
 
 RESET = "\033[0m"
 BOLD = "\033[1m"
@@ -49,6 +53,40 @@ def build_providers(args) -> Providers:
 
 
 def cmd_run(args) -> None:
+    """Executa a tarefa. Regras especiais relacionadas ao "gatilho" visual:
+
+    - Se o usuário executar `supercode` (sem argumentos) ou `supercode run supercode`,
+      exibimos o aquário em modo interativo.
+    - Para ativar o LLM (orquestrador) a tarefa deve começar com o prefixo
+      `super code` (com espaço). Ex: `super code adicione autenticação`.
+      Ao detectar esse prefixo mostramos o aquário por 2s e então executamos.
+    """
+    task = (args.task or "").strip()
+
+    # caso explícito: usuário só quer ver o aquário
+    if task.lower() == "supercode":
+        aquarium.main(task_label="supercode — pressione 'q' para sair", duration=None)
+        return
+
+    # exige prefixo de habilitação do LLM
+    if not task.lower().startswith("super code"):
+        print("Para ativar o LLM escreva a tarefa começando com 'super code'.\nEx: super code adicione autenticação nesse projeto")
+        print("Ou execute `supercode` sem argumentos para ver o aquário interativo.")
+        return
+
+    # tarefa real (tira o prefixo)
+    real_task = task[len("super code"):].strip()
+    if not real_task:
+        print("Tarefa vazia — depois do prefixo 'super code' descreva o que deseja.")
+        return
+
+    # mostramos o aquário como 'splash' por 2 segundos antes de ativar os agentes
+    try:
+        aquarium.main(task_label=f"Ativando LLM — {real_task}", duration=2.0)
+    except Exception:
+        # se o terminal não suportar curses, continuamos sem o splash
+        pass
+
     providers = build_providers(args)
     orch = SuperCodeOrchestrator(
         project_root=args.project or ".",
@@ -58,7 +96,7 @@ def cmd_run(args) -> None:
     )
 
     print(f"{BOLD}SuperCode{RESET} — analisando o projeto em {Path(args.project or '.').resolve()}\n")
-    result = orch.run_task(args.task)
+    result = orch.run_task(real_task)
     plan = result["plan"]
 
     print(f"\n{BOLD}{YELLOW}=== PLANO PROPOSTO ==={RESET}\n{plan}\n")
@@ -69,7 +107,7 @@ def cmd_run(args) -> None:
             print("Cancelado. Nenhuma mudança foi feita.")
             return
 
-    final = orch.confirm_and_implement(args.task, plan)
+    final = orch.confirm_and_implement(real_task, plan)
 
     print(f"\n{BOLD}{GREEN}=== RESUMO FINAL ==={RESET}")
     print(final["implementer_summary"])
@@ -80,6 +118,7 @@ def cmd_run(args) -> None:
 
 def cmd_init_config(args) -> None:
     from core.config import CONFIG_PATH
+
     CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
     if CONFIG_PATH.exists() and not args.force:
         print(f"Já existe um config em {CONFIG_PATH}. Use --force para sobrescrever.")
@@ -110,6 +149,10 @@ def build_parser() -> argparse.ArgumentParser:
     init_p.add_argument("--force", action="store_true")
     init_p.set_defaults(func=cmd_init_config)
 
+    # subcomando direto para abrir o aquário
+    aq_p = sub.add_parser("aquarium", help="Exibe o aquário interativo")
+    aq_p.set_defaults(func=lambda args: aquarium.main(task_label="supercode — pressione 'q' para sair", duration=None))
+
     return parser
 
 
@@ -118,8 +161,13 @@ def main() -> None:
 
     # atalho: `supercode "tarefa"` sem precisar digitar `run`
     argv = sys.argv[1:]
-    if argv and argv[0] not in ("run", "init-config", "-h", "--help"):
+    if argv and argv[0] not in ("run", "init-config", "aquarium", "-h", "--help"):
         argv = ["run"] + argv
+
+    # atalho: nenhum argumento -> mostra o aquário interativo
+    if not argv:
+        aquarium.main(task_label="supercode — pressione 'q' para sair", duration=None)
+        return
 
     args = parser.parse_args(argv)
     if not hasattr(args, "func"):
