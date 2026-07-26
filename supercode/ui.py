@@ -13,6 +13,25 @@ import random
 console = Console()
 
 
+def build_startup_banner() -> str:
+    """Retorna um banner inicial com peixe ASCII, barra de comando e mensagem de entrada."""
+    fish = [
+        "      <><((('>      ",
+        "      /\\_\\_\\       ",
+        "      \\__//        ",
+    ]
+    command_bar = "[ CMD ] supercode  ──> digite sua tarefa"
+    ascii_art = "\n".join(fish)
+    return f"""
+🐠  SUPERCODE  🐠
+{ascii_art}
+
+{command_bar}
+
+Digite sua tarefa e pressione Enter.
+"""
+
+
 class Fish:
     """Mascote peixe animado"""
     
@@ -104,30 +123,15 @@ class Aquarium:
 
 def display_welcome():
     """Exibe a tela de boas-vindas"""
-    
+
     console.clear()
-    
-    title = Text("🐠 SUPERCODE 🐠", justify="center", style="bold cyan")
-    subtitle = Text("Interactive Command Interface with Aquarium", justify="center", style="italic magenta")
-    
-    console.print("\n")
-    console.print(title)
-    console.print(subtitle)
-    console.print("\n")
-    
-    # Aquário inicial
-    aquarium = Aquarium()
-    aquarium_display = aquarium.draw_aquarium()
-    
-    panel = Panel(
-        aquarium_display,
-        title="[bold green]Aquário Supercode[/bold green]",
-        border_style="blue",
-        expand=True
-    )
-    console.print(panel)
-    
-    console.print("\n[yellow]Digite 'supercode' para iniciar o comando[/yellow]\n")
+
+    banner = build_startup_banner()
+    console.print(Panel.fit(banner, border_style="cyan", title="[bold green]Bem-vindo[/bold green]"))
+    console.print()
+    console.print("[bold magenta]Seu peixe está pronto para ajudar.[/bold magenta]")
+    console.print("[yellow]Digite sua tarefa diretamente e pressione Enter.[/yellow]")
+    console.print()
 
 
 def display_loading(message="Processando"):
