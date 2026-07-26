@@ -1,0 +1,18 @@
+[project]
+name = "supercode"
+version = "0.1.0"
+description = "Orquestrador multi-agente de programação: planner, implementer, reviewer, tester, sobre múltiplos provedores de LLM."
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.31",
+]
+
+[project.scripts]
+supercode = "cli.main:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["core", "agents", "providers", "tools", "memory", "cli"]
