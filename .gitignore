@@ -173,3 +173,22 @@ poetry.lock
 *~
 *.swp
 *.swo
+
+# Configuration files that might contain secrets
+config.ini
+config.local.ini
+.env.*.local
+config/local/
+instance/
+
+# Database dumps and backups
+*.dump
+*.backup
+*.sql
+
+# IDE sensitive files
+.vscode/settings.json
+.idea/misc.xml
+
+# OS specific
+.env.local.backup
